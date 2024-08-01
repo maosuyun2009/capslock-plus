@@ -231,7 +231,6 @@ f12::
 space::
 tab::
 enter::
-esc::
 backspace::
 ralt::
 try

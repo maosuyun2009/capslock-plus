@@ -34,7 +34,7 @@ setIME(language)
 {
     Sleep 50 ; 等一等是为了承接窗口切换的缓冲
     If (language == "中文") {
-        If (hasIME() == 1025) {
+        If (hasIME()==0) {
             send, ^{space}
             If (GetKeyState("CapsLock","T"))
                 ToolTip,"中 A"
@@ -42,7 +42,7 @@ setIME(language)
                 ToolTip, "中 a"
         }
     } else if (language == "EN") {
-        if (hasIME() == 1025) {
+        if (hasIME()!=0) {
             send, ^{space}
             If (GetKeyState("CapsLock","T"))
                 ToolTip,"EN A"
@@ -51,8 +51,10 @@ setIME(language)
         }
     }
     ; setCaspsLockState "Off"
-    Sleep 1000 ; 悬浮提示（如有）0.25 秒后消失
-    ToolTip
+    if (!GetKeyState("CapsLock","T")) {
+        Sleep 1000 ; 悬浮提示（如有）0.25 秒后消失
+        ToolTip
+    }
 }
 
 ;-----------------------------------------------------------
@@ -122,7 +124,7 @@ return
     ~ ToolTip, %WhichControl%`nX%X%`tY%Y%`nW%W%`t%H%
     if ( 0 = not_Edit_InFocus())
     {
-        If (hasIME()=1025)
+        If (hasIME()!=0)
             If (GetKeyState("CapsLock","T"))
                 ToolTip,"中文 A"
             else
@@ -138,8 +140,10 @@ return
 
 ~RShift up::
 ~Lbutton up::
-    Sleep,1000
-    ToolTip
+    if (!GetKeyState("CapsLock", "T")) {
+        Sleep,1000
+        ToolTip
+    }
 return
 
 not_Edit_InFocus(){
@@ -189,7 +193,23 @@ keyFunc_run(p){
 }
 
 keyFunc_toggleCapsLock(){
-    SetCapsLockState, % GetKeyState("CapsLock","T") ? "Off" : "On"
+    ; SetCapsLockState, % GetKeyState("CapsLock","T") ? "Off" : "On"
+    if (GetKeyState("CapsLock", "T")) {
+        SetCapsLockState, Off
+        if (hasIME()!=0)
+                ToolTip,"中 a"
+        else
+                ToolTip,"EN a"
+        Sleep, 1000
+        ToolTip,
+    }
+    else {
+        SetCapsLockState, On
+        if (hasIME() == IME_CN)
+                ToolTip,"中 A"
+        else
+                ToolTip,"EN A"
+    }
     return
 }
 
